@@ -1,5 +1,112 @@
 extends layout
-
+block append head
+    style.
+        body{
+            background: #3E3E3E;
+        }
 block content
-  h1= title
-  p Welcome to #{title}
+    #wrapper
+        nav(class="navbar navbar-default top-navbar" role="navigation")
+            .navbar-header
+                button(class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse")
+                    span.sr-only Toggle navigation
+                    span.icon-bar
+                    span.icon-bar
+                    span.icon-bar
+                a(class="navbar-brand" href="#")
+                    strong
+                        i.icon.fa.fa-plane
+                        |   Chiefan 管理系统
+                #sideNav
+                    i.fa.fa-bars.icon
+            ul(class="nav navbar-top-links navbar-right")
+                li.dropdown
+                    a(class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false")
+                        i.fa.fa-user.fa-fw
+                        span= user.name
+                        i.fa.fa-caret-down
+                    ul.dropdown-menu.dropdown-user
+                        li
+                            a(href="#" data-toggle="modal" data-target="#myModal")
+                                i.fa.fa-key
+                                |   &nbsp;&nbsp;密码修改
+                        li
+                            a(href="#")
+                                i.fa.fa-eraser
+                                |   &nbsp;&nbsp;清空缓存
+                        li
+                            a(href="/logout")
+                                i.fa.fa-refresh
+                                |   &nbsp;&nbsp;安全退出
+        nav.navbar-default.navbar-side(role="navigation")
+            .sidebar-collapse
+                ul#main-menu.nav
+                    li.active
+                        a.li-disabled
+                            i.fa.fa-desktop
+                            |  平台项目管理
+                            span.fa.arrow
+                        ul.nav.nav-second-level
+                            li
+                                a.active-menu(href="/node",target="menuFrame")
+                                    i.fa.fa-flag
+                                    |   节点管理
+                            li
+                                a(href="/node",target="menuFrame")
+                                    i.fa.fa-user
+                                    |   人员管理
+                            li
+                                a(href="/node",target="menuFrame")
+                                    i.fa.fa-inbox
+                                    |   设备管理
+                            li
+                                a(href="/node",target="menuFrame")
+                                    i.fa.fa-clock-o
+                                    |   时段管理
+                            li
+                                a(href="/node",target="menuFrame")
+                                    i.fa.fa-user-md
+                                    |   特殊人员管理
+                            li
+                                a(href="/node",target="menuFrame")
+                                    i.fa.fa-bell-o
+                                    |   设备状态
+                    li.active
+                        a.li-disabled
+                            i.fa.fa-columns
+                            |  项目报表
+                            span.fa.arrow
+                        ul.nav.nav-second-level
+                            li
+                                a(href="/node",target="menuFrame")
+                                    i.fa.fa-bar-chart-o
+                                    |   事件报表
+        #page-wrapper
+            iframe#menuFrame(scrolling="yes" name="menuFrame" style="width:100%;overflow:visible" frameborder="0" src="/node")
+    #myModal.modal.fade(tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true")
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    button.close(type="button", data-dismiss="modal", aria-hidden="true") ×
+                    |
+                    h4#myModalLabel.modal-title 修改密码
+                |
+                .modal-body
+                    .panel-body
+                        .sub-title 原密码
+                        div
+                            input.form-control(type="text", placeholder="Text input")
+                        .sub-title 新密码
+                        div
+                            input.form-control(type="text", placeholder="Text input")
+                |
+                .modal-footer
+                    button.btn.btn-default(type="button", data-dismiss="modal") 关闭
+                    |
+                    button.btn.btn-primary(type="button") 确认修改
+    //<!-- jQuery Js -->
+    script(src="/javascripts/jquery-1.10.2.js")
+    //<!-- Bootstrap Js -->
+    script(src="/javascripts/bootstrap.min.js")
+    //自定义js
+    script(src="/javascripts/custom.js")

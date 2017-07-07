@@ -1,17 +1,18 @@
 0 info it worked if it ends with ok
 1 verbose cli [ 'C:\\Program Files\\nodejs\\node.exe',
 1 verbose cli   'C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
-1 verbose cli   'start' ]
+1 verbose cli   'run',
+1 verbose cli   'dev' ]
 2 info using npm@3.10.10
 3 info using node@v6.10.0
-4 verbose run-script [ 'prestart', 'start', 'poststart' ]
-5 info lifecycle zhinengyun@1.0.0~prestart: zhinengyun@1.0.0
-6 silly lifecycle zhinengyun@1.0.0~prestart: no script for prestart, continuing
-7 info lifecycle zhinengyun@1.0.0~start: zhinengyun@1.0.0
-8 verbose lifecycle zhinengyun@1.0.0~start: unsafe-perm in lifecycle true
-9 verbose lifecycle zhinengyun@1.0.0~start: PATH: C:\Program Files\nodejs\node_modules\npm\bin\node-gyp-bin;E:\工作\zhinengyun\node_modules\.bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files\Git\cmd;C:\Program Files\nodejs\;C:\Users\Administrator\AppData\Roaming\npm
-10 verbose lifecycle zhinengyun@1.0.0~start: CWD: E:\工作\zhinengyun
-11 silly lifecycle zhinengyun@1.0.0~start: Args: [ '/d /s /c', 'set NODE_ENV=production&&node ./bin/www' ]
+4 verbose run-script [ 'predev', 'dev', 'postdev' ]
+5 info lifecycle zhinengyun@1.0.0~predev: zhinengyun@1.0.0
+6 silly lifecycle zhinengyun@1.0.0~predev: no script for predev, continuing
+7 info lifecycle zhinengyun@1.0.0~dev: zhinengyun@1.0.0
+8 verbose lifecycle zhinengyun@1.0.0~dev: unsafe-perm in lifecycle true
+9 verbose lifecycle zhinengyun@1.0.0~dev: PATH: C:\Program Files\nodejs\node_modules\npm\bin\node-gyp-bin;E:\工作\zhinengyun\node_modules\.bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files\Git\cmd;C:\Program Files\nodejs\;C:\Users\Administrator\AppData\Roaming\npm
+10 verbose lifecycle zhinengyun@1.0.0~dev: CWD: E:\工作\zhinengyun
+11 silly lifecycle zhinengyun@1.0.0~dev: Args: [ '/d /s /c', 'set NODE_ENV=development&&nodemon ./bin/www' ]
 12 verbose stack Error: kill ENOSYS
 12 verbose stack     at exports._errnoException (util.js:1022:11)
 12 verbose stack     at process.kill (internal/process.js:172:13)
@@ -23,7 +24,7 @@
 12 verbose stack     at Signal.wrap.onsignal (internal/process.js:199:44)
 13 verbose cwd E:\工作\zhinengyun
 14 error Windows_NT 6.1.7601
-15 error argv "C:\\Program Files\\nodejs\\node.exe" "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "start"
+15 error argv "C:\\Program Files\\nodejs\\node.exe" "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "run" "dev"
 16 error node v6.10.0
 17 error npm  v3.10.10
 18 error code ENOSYS

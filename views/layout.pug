@@ -1,7 +1,13 @@
 doctype html
 html
-  head
-    title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
-  body
-    block content
+    head
+        meta(charset="utf-8")
+        meta(name="viewport" content="width=device-width, initial-scale=1.0")
+        link(href="/stylesheets/bootstrap.css" rel="stylesheet")
+        link(href="/stylesheets/font-awesome.css" rel="stylesheet")
+        link(href="/stylesheets/checkbox3.min.css" rel="stylesheet")
+        link(href="/stylesheets/custom-styles.css" rel="stylesheet")
+        title= title
+        block head
+    body
+        block content
