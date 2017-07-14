@@ -6,7 +6,7 @@ block content
         .row
             .col-md-4.col-md-push-8
                 // Start Sign In Form
-                form.fh5co-form.animate-box(action="/login",method="post" data-animate-effect="fadeInRight")
+                form#formLogin.fh5co-form.animate-box(action="/login",method="post" data-animate-effect="fadeInRight")
                     h2 管理员登录
                     |
                     .form-group
@@ -27,5 +27,16 @@ block content
                                 | 记住我
                     .form-group
                         input.btn.btn-primary(type="submit", value="登录")
+    script(src="javascripts/jquery.form.js")
+    script.
+        $(document).ready(function () {
+            $("#formLogin").ajaxForm(function (data) {
+                if(data.code>0){
+                    $('.alert-success').html(data.msg);
+                    location.replace('/');
 
+                }else
+                    $('.alert-danger').show().html(data.msg).animate({opacity: "hide"}, 3000);
+            });
+        });
 

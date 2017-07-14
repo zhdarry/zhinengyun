@@ -675,5 +675,10 @@ font-size: 19px;
   margin: 14px;
 }
 }
+.info-position{
+    position: fixed;
+    top: 0;
+    width: 100%;
+}
 
 

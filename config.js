@@ -6,10 +6,15 @@ module.exports = {
         name:"user",
         secret:"zhinengyun secret",
         cookie:{
-            maxAge:1000*60*60*24*3
+            maxAge:1000*60*60*24
         },
         resave:true,
         saveUninitialized:false
     },
-    apiurl:'localhost:3000/'
+    apiurl:"http://www.tinglema.cn:9000/",
+    apiurlGet:"http://www.tinglema.cn:9000/query/",
+    apiurlPost:"http://www.tinglema.cn:9000/platform/",
+    //请求获取appKey
+    appID:"cpp.3d11019343ad8b315a3310408ff7",
+
 }

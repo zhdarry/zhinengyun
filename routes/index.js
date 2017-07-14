@@ -1,7 +1,8 @@
 'use strict';
 const express = require('express');
 const middlewares = require('../middlewares/check');
-const Ajax = require('../proxy/request');
+const des = require('../utils/des');
+const request = require('../proxy/request');
 
 const router = express.Router();
 
@@ -18,8 +19,21 @@ router.get('/login',function (req, res, next) {
 router.post('/login',function (req, res, next) {
     const username = req.body.username;
     const password = req.body.password;
-    req.session.user = {name:username};
-    res.redirect('/');
+    if(username&&password) {
+        request.post('login', {}, {
+            sysuser: username,
+            password: des.encrypt(password)
+        }).then(data => {
+            if(data.result>0){
+                req.session.user = {name:username,token:data.data.token};
+                res.json({code:1,msg:'登录成功'});
+            }else{
+                res.json({code:-1,msg:"密码错误"});
+            }
+        })
+    }else
+        res.json({code:0,msg:"信息不完整"})
+
 });
 //登出
 router.get('/logout',function (req, res, next) {

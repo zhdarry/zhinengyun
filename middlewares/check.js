@@ -3,13 +3,12 @@
  */
 module.exports = {
     //检查是否登录
-    checkLogin : function (req, res, next) {
-        if(!req.session.user){
+    checkLogin: function (req, res, next) {
+        if (!req.session.user) {
             res.redirect('/login');
-            next();
-        }else{
+        } else {
             res.locals.user = req.session.user;
             next();
         }
     }
-}
+};
