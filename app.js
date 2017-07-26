@@ -5,8 +5,10 @@ const logger = require('morgan');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 
+const locals = require('./middlewares/locals');
 //所有路由
-const routes = require('./routes');
+const routes = require('./routes/index');
+const admin = require('./routes/admin');
 const config = require('./config');
 
 const app = express();
@@ -18,14 +20,18 @@ app.set('view engine', 'pug');
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 //app.use(logger('dev'));
+//中间件
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(session(config.session));
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(locals);
+
+
 //路由
 app.use('/',routes);
-
+app.use('/admin',admin);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -26,7 +26,15 @@ router.post('/login',function (req, res, next) {
         }).then(data => {
             if(data.result>0){
                 req.session.user = {name:username,token:data.data.token};
-                res.json({code:1,msg:'登录成功'});
+                switch (data.data.category) {
+                    case "admin":
+                        res.json({code:1,msg:"登录成功",url:"/admin"});
+                        break;
+
+                    case "project":
+                        res.json({code:1,msg:"登录成功",url:"/"});
+                        break;
+                }
             }else{
                 res.json({code:-1,msg:"密码错误"});
             }
@@ -39,7 +47,37 @@ router.post('/login',function (req, res, next) {
 router.get('/logout',function (req, res, next) {
     req.session.user = null;
     res.redirect('/login');
-}); 
+});
+//修改密码
+router.post('/changePassword',function (req, res, next) {
+    const oldP= des.encrypt(req.body.oldP);
+    const newP = des.encrypt(req.body.newP);
+    request.post('sysuser',{
+        cmd:'pwd',
+        session:req.session.user.token},{
+        password_old:oldP,
+        password_new:newP
+    }).then(data=>{
+        res.json(data);
+    })
+})
+
+router.get('/getVerifyCode',function (req, res) {
+
+    const superagent = require('superagent');
+    superagent
+        .get('http://sdk2.028lk.com:9880/utf8/BatchSend2.aspx?CorpID=CDJS003051&Pwd=zm0513@&Mobile=18681381406&Content=您好！您本次的验证码为：123456请注意查收&Cell=&SendTime=')
+        .end(function (err, data) {
+            if(err){
+                console.log(err);
+                res.end();
+            }else {
+                console.log(data.text);
+                res.json(data);
+            }
+
+    })
+});
 
 
 //节点管理

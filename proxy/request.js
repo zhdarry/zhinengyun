@@ -59,6 +59,41 @@ module.exports = {
                     })
             })
         })
+    },
+    config:function (method, params = {}, data = {}) {
+        return new Promise((resolve, reject) => {
+            signature.setHeaders().then(headers => {
+                if(method === 'get'){
+                    request
+                        .get(config.apiurlConfig)
+                        .set(headers)
+                        .query(params)
+                        .send(data)
+                        .buffer(true).parse(request.parse['application/json'])
+                        .end((err, res) => {
+                            if (res && res.body)
+                                resolve(res.body);
+                            else
+                                reject(err || res);
+                        })
+                }else if(method === 'post'){
+                    request
+                        .post(config.apiurlConfig)
+                        .set(headers)
+                        .query(params)
+                        .send(data)
+                        .buffer(true).parse(request.parse['application/json'])
+                        .end((err, res) => {
+                            if (res && res.body)
+                                resolve(res.body);
+                            else
+                                reject(err || res);
+                        })
+                }else
+                    reject("参数错误");
+
+            })
+        })
     }
 };
 

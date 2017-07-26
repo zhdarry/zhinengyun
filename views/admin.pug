@@ -44,45 +44,19 @@ block content
                     li.active
                         a.li-disabled
                             i.fa.fa-desktop
-                            |  平台项目管理
+                            |  平台管理
                             span.fa.arrow
                         ul.nav.nav-second-level
                             li
-                                a.active-menu(href="/node",target="menuFrame")
+                                a.active-menu(href="/admin/project",target="menuFrame")
                                     i.fa.fa-flag
-                                    |   节点管理
+                                    |   项目管理
                             li
-                                a(href="/node",target="menuFrame")
+                                a(href="/admin/user",target="menuFrame")
                                     i.fa.fa-user
-                                    |   人员管理
-                            li
-                                a(href="/node",target="menuFrame")
-                                    i.fa.fa-inbox
-                                    |   设备管理
-                            li
-                                a(href="/node",target="menuFrame")
-                                    i.fa.fa-clock-o
-                                    |   时段管理
-                            li
-                                a(href="/node",target="menuFrame")
-                                    i.fa.fa-user-md
-                                    |   特殊人员管理
-                            li
-                                a(href="/node",target="menuFrame")
-                                    i.fa.fa-bell-o
-                                    |   设备状态
-                    li.active
-                        a.li-disabled
-                            i.fa.fa-columns
-                            |  项目报表
-                            span.fa.arrow
-                        ul.nav.nav-second-level
-                            li
-                                a(href="/node",target="menuFrame")
-                                    i.fa.fa-bar-chart-o
-                                    |   事件报表
+                                    |   管理员管理
         #page-wrapper
-            iframe#menuFrame(scrolling="yes" name="menuFrame" style="width:100%;overflow:visible" frameborder="0" src="/node")
+            iframe#menuFrame(scrolling="yes" name="menuFrame" style="width:100%;overflow:visible" frameborder="0" src="/admin/project")
     #myModal.modal.fade(tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true")
         form#formChangePassword.modal-dialog(action="/changePassword", method="POST", data-animate-effect="fadeInRight")
             .modal-content

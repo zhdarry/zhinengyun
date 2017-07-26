@@ -1,0 +1,57 @@
+extends ../layout
+block append head
+    link(href="/dataTables/dataTables.bootstrap.css", rel="stylesheet")
+block content
+    .header
+        .page-header
+        ol.breadcrumb
+            li
+                a(href="/admin/project") 主页
+            li.active 项目管理
+    |
+    |
+    #page-inner
+        .row
+            .col-md-12
+                // Advanced Tables
+                .panel.panel-default
+                    .panel-heading
+                        | 项目列表
+                    |
+                    .panel-body
+                        .table-responsive
+                            table#dataTables-example.table.table-striped.table-bordered.table-hover
+                                thead
+                                    tr
+                                        th 项目名称
+                                        th 项目编码
+                                        th 项目地址
+                                        th 经纬度
+                                        th 停了吗ID
+                                        th 创建时间
+                                        th 设备列表
+                                |
+                                tbody
+                                    if data.result>0
+                                        for item in data.data
+                                            tr.gradeA
+                                                td= item.name
+                                                td= item.id
+                                                td= item.address
+                                                td= item.latitude+"-"+item.longitude
+                                                td= item.parkid
+                                                td= dateFormat(item.dt_set)
+                                                td 查看
+                                    else
+                                        tr.gradeC
+                                            td 暂无数据
+    // DATA TABLE SCRIPTS
+    script(src="/dataTables/jquery.dataTables.js")
+    |
+    script(src="/dataTables/dataTables.bootstrap.js")
+    |
+    script.
+        $(document).ready(function () {
+            $('#dataTables-example').dataTable();
+        });
+
