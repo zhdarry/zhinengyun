@@ -63,7 +63,6 @@ router.post('/changePassword',function (req, res, next) {
 })
 
 router.get('/getVerifyCode',function (req, res) {
-
     const superagent = require('superagent');
     superagent
         .get('http://sdk2.028lk.com:9880/utf8/BatchSend2.aspx?CorpID=CDJS003051&Pwd=zm0513@&Mobile=18681381406&Content=您好！您本次的验证码为：123456请注意查收&Cell=&SendTime=')
@@ -80,10 +79,132 @@ router.get('/getVerifyCode',function (req, res) {
 });
 
 
-//节点管理
-router.get('/node',function (req, res, next) {
-    res.render('node', { title: 'node' });
+//节点管理页面
+router.get('/map',function (req, res, next) {
+    Promise.all([request.get('/select',{query:"project"}),request.get('/dict',{query:"map.type"})]).then(([data,type])=>{
+        res.render('project/map', {
+            title: 'Map',
+            data:data.data,
+            type:type.data,
+        });
+    }).catch(error=>{
+        next(error);
+    })
 });
+//获取节点信息
+router.get('/getmap',function (req, res, next) {
+    if(req.xhr){
+        request.post_ext('/select',{query:"map"},{
+            pid:req.query.pid,
+            lv1:req.query.lv1,
+            lv2:req.query.lv2,
+            lv3:req.query.lv3,
+            lv4:req.query.lv4,
+            lv5:req.query.lv5,
+            lv6:req.query.lv6,
+        }).then(data=>{
+            res.json(data);
+        }).catch(error=>{
+            next(error);
+        })
+    }else{
+        res.end();
+    }
+});
+//新增项目节点
+router.post('/newmap',function (req, res, next) {
+    if(req.xhr){
+        const data = req.body;
+        data[data.nl]=data.value;
+        request.post('map',{cmd:"add",pid:data.pid,session:req.session.user.token},{
+            lv1:data.lv1,
+            lv2:data.lv2||"",
+            lv3:data.lv3||"",
+            lv4:data.lv4||"",
+            lv5:data.lv5||"",
+            lv6:data.lv6||"",
+            type:data.type,
+            floor:data.floor||0
+        }).then(data=>{
+            res.send(data);
+        }).catch(error=>{
+            next(error);
+        })
+    }
+});
+//修改节点
+router.post('/editmap',function (req, res, next) {
+    if(req.xhr){
+        const data = req.body;
+        request.post('map',{cmd:"set",pid:data.pid,session:req.session.user.token},{
+            lv1:data.lv1,
+            lv2:data.lv2||"",
+            lv3:data.lv3||"",
+            lv4:data.lv4||"",
+            lv5:data.lv5||"",
+            lv6:data.lv6||"",
+            value:data.value,
+            type:data.type,
+            floor:data.floor||0
+        }).then(data=>{
+            res.send(data);
+        }).catch(error=>{
+            next(error);
+        })
+    }
+});
+//删除节点
+router.post('/delmap',function (req, res, next) {
+    if(req.xhr){
+        const data = req.body;
+        request.post('map',{cmd:"del",pid:data.pid,session:req.session.user.token},{
+            lv1:data.lv1,
+            lv2:data.lv2||"",
+            lv3:data.lv3||"",
+            lv4:data.lv4||"",
+            lv5:data.lv5||"",
+            lv6:data.lv6||""
+        }).then(data=>{
+            res.send(data);
+        }).catch(error=>{
+            next(error);
+        })
+    }
+});
+
+//获取人员信息页面
+router.get('/user',function (req, res, next) {
+    request.get('select',{query:"user"}).then(data=>{
+        console.log(data);
+        res.render('project/user',{
+            title:"User",
+            data:data
+        })
+    }).catch(error=>{
+        next(error);
+    })
+});
+//获取设备信息
+router.get('/device',function (req, res, next) {
+    res.render('project/device',{
+        title:"Device",
+
+    })
+})
+
+//获取设备状态
+router.get('/status',function (req, res, next) {
+    request.getSecure('select',{query:"device.status",pid:"0001"}).then(data=>{
+        console.log(data);
+        res.render('project/status',{
+            title:"Status",
+            data:data
+        })
+    }).catch(error=>{
+        next(error);
+    })
+})
+
 
 
 module.exports = router;

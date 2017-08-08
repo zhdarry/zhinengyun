@@ -60,6 +60,24 @@ module.exports = {
             })
         })
     },
+    post_ext: function (name, params = {}, data = {}) {
+        return new Promise((resolve, reject) => {
+            signature.setHeaders().then(headers => {
+                request
+                    .post(config.apiurlGet + name)
+                    .set(headers)
+                    .query(params)
+                    .send(data)
+                    .buffer(true).parse(request.parse['application/json'])
+                    .end((err, res) => {
+                        if (res && res.body)
+                            resolve(res.body);
+                        else
+                            reject(err || res);
+                    })
+            })
+        })
+    },
     config:function (method, params = {}, data = {}) {
         return new Promise((resolve, reject) => {
             signature.setHeaders().then(headers => {

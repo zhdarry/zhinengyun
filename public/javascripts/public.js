@@ -1,12 +1,16 @@
 /**
  * Created by zhdarry on 2017/7/26.
  */
-'use strict';
-(function ($) {
-    const dateFormat = {
-        yyyymmdd:function (date) {
-            const date = new Date(date);
-            return date.getFullYear()+"-"+date.getMonth()+1+"-"+date.getDate();
-        },
+const dateFormat = function (d) {
+    const date = eval('new ' + (d.replace(/\//g, '')));
+    return date.getFullYear()+"."+(parseInt(date.getMonth())+1)+"."+date.getDate();
+};
+
+const toastMessage = function (message,is) {
+    if(is===true) {
+        $('.alert-success', window.top.document).html(message).show().fadeOut(3000);
     }
-}(jQuery));
+    else {
+        $('.alert-danger', window.top.document).html(message).show().fadeOut(3000);
+    }
+}

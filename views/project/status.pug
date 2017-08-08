@@ -1,0 +1,53 @@
+extends ../layout
+block append head
+    link(href="/dataTables/dataTables.bootstrap.css", rel="stylesheet")
+block content
+    .header
+        .page-header
+        ol.breadcrumb
+            li
+                a(href="/status") 主页
+            li.active 设备状态
+    #page-inner
+        .row
+            .col-md-12
+                // Advanced Tables
+                .panel.panel-default
+                    .panel-body
+                        .table-responsive
+                            table#dataTables-example.table.table-striped.table-bordered.table-hover
+                                thead
+                                    tr
+                                        th 设备名称
+                                        th 设备编码
+                                        th 设备状态
+                                        th 状态描述
+                                        th 状态采集时间
+                                |
+                                tbody
+                                    if data.result>0
+                                        for item in data.data
+                                            tr.gradeA
+                                                td= item.devname
+                                                td= item.devid
+                                                td= item.code
+                                                td= item.remark
+                                                td= dateFormat(item.dt_get)
+
+                                    else
+                                        tr.gradeC
+                                            td 暂无数据
+                                            td 暂无数据
+                                            td 暂无数据
+                                            td 暂无数据
+                                            td 暂无数据
+
+    // DATA TABLE SCRIPTS
+    script(src="/dataTables/jquery.dataTables.js")
+    script(src="/dataTables/dataTables.bootstrap.js")
+    script.
+        $(document).ready(function () {
+            $('#dataTables-example').dataTable();
+        })
+
+

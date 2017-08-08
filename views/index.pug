@@ -48,11 +48,11 @@ block content
                             span.fa.arrow
                         ul.nav.nav-second-level
                             li
-                                a.active-menu(href="/node",target="menuFrame")
+                                a.active-menu(href="/map",target="menuFrame")
                                     i.fa.fa-flag
                                     |   节点管理
                             li
-                                a(href="/node",target="menuFrame")
+                                a(href="/user",target="menuFrame")
                                     i.fa.fa-user
                                     |   人员管理
                             li
@@ -68,7 +68,7 @@ block content
                                     i.fa.fa-user-md
                                     |   特殊人员管理
                             li
-                                a(href="/node",target="menuFrame")
+                                a(href="/status",target="menuFrame")
                                     i.fa.fa-bell-o
                                     |   设备状态
                     li.active
@@ -82,7 +82,7 @@ block content
                                     i.fa.fa-bar-chart-o
                                     |   事件报表
         #page-wrapper
-            iframe#menuFrame(scrolling="yes" name="menuFrame" style="width:100%;overflow:visible" frameborder="0" src="/node")
+            iframe#menuFrame(scrolling="yes" name="menuFrame" style="width:100%;overflow:visible" frameborder="0" src="/map")
     #myModal.modal.fade(tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true")
         form#formChangePassword.modal-dialog(action="/changePassword", method="POST", data-animate-effect="fadeInRight")
             .modal-content

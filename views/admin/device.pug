@@ -8,6 +8,7 @@ block content
             li
                 a(href="/admin/project") 主页
             li.active 项目管理
+            li.active 设备信息
     |
     |
     #page-inner
@@ -16,20 +17,17 @@ block content
                 // Advanced Tables
                 .panel.panel-default
                     .panel-heading
-                        | 项目列表
+                        | 设备列表
                     |
                     .panel-body
                         .table-responsive
                             table#dataTables-example.table.table-striped.table-bordered.table-hover
                                 thead
                                     tr
-                                        th 项目名称
-                                        th 项目编码
-                                        th 项目地址
-                                        th 经纬度
-                                        th 停了吗ID
-                                        th 创建时间
-                                        th 设备列表
+                                        th 设备名称
+                                        th 设备编码
+                                        th 使用模式
+                                        th 设备类型
                                 |
                                 tbody
                                     if data.result>0
@@ -37,15 +35,14 @@ block content
                                             tr.gradeA
                                                 td= item.name
                                                 td= item.id
-                                                td= item.address
-                                                td= item.latitude+"-"+item.longitude
-                                                td= item.parkid
-                                                td= dateFormat(item.dt_set)
-                                                td
-                                                    a(href= "/admin/device/"+item.id) 查看
+                                                td= item.modename
+                                                td= item.typename
                                     else
                                         tr.gradeC
-                                            td(colspan=7) 暂无数据
+                                            td 暂无数据
+                                            td 暂无数据
+                                            td 暂无数据
+                                            td 暂无数据
     // DATA TABLE SCRIPTS
     script(src="/dataTables/jquery.dataTables.js")
     |

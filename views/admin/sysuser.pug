@@ -1,0 +1,188 @@
+extends ../layout
+block append head
+    link(href="/dataTables/dataTables.bootstrap.css", rel="stylesheet")
+block content
+    .header
+        .page-header
+        ol.breadcrumb
+            li
+                a(href="/admin/sysuser") 主页
+            li.active 管理员管理
+    |
+    |
+    #page-inner
+        .row
+            .col-md-12
+                // Advanced Tables
+                .panel.panel-default
+                    .panel-heading
+                        a(href="#" data-toggle="modal" data-target="#newSysuserModal")
+                            | 新建管理员 +
+                    |
+                    .panel-body
+                        .table-responsive
+                            table#dataTables-example.table.table-striped.table-bordered.table-hover
+                                thead
+                                    tr
+                                        th 管理员账号
+                                        th 管理员名称
+                                        th 管理员类型
+                                        th 有效期
+                                        th 启用状态
+                                        th 编辑
+                                |
+                                tbody
+                                    if data.result>0
+                                        for item in data.data
+                                            tr.gradeA
+                                                td= item.name
+                                                td= item.display
+                                                td= item.rolename
+                                                td= dateFormat(item.expiredate)
+                                                td
+                                                    img.myicon(src= "/images/isused_"+item.isused+".png")
+                                                td
+                                                    img.myicon(src="/images/edit.png",title="编辑" onclick='getData(\''+item.name+'\')')
+                                                    img.myicon(src="/images/del.png",title="删除" onclick='delUser(\''+item.name+'\')')
+                                                    img.myicon(src="/images/reset.png",title="重置密码" onclick='reset(\''+item.name+'\')')
+                                    else
+                                        tr.gradeC
+                                            td(colspan=5) 暂无数据
+    #newSysuserModal.modal.fade(tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true")
+        form#newSysuser.modal-dialog(action="/admin/sysuser?cmd=add", method="POST", data-animate-effect="fadeInRight")
+            .modal-content
+                .modal-header
+                    button.close(type="button", data-dismiss="modal", aria-hidden="true") ×
+                    |
+                    h4#newModalLabel.modal-title 新建管理员
+                .modal-body
+                    .panel-body
+                        .sub-title 管理员账号
+                        div
+                            input.form-control(type="text", name="name" placeholder="管理员账号")
+                        .sub-title 显示名称
+                        div
+                            input.form-control(type="text", name="display" placeholder="显示名称")
+                        .sub-title 有效期
+                        div
+                            input.form-control(type="text", name="expiredate" placeholder="有效期" value="2099-12-31" readonly)
+                        .sub-title 角色
+                            div
+                                select(name="nrole").form-control
+                                    option(value=0) 平台管理员
+                                    option(value=1) 项目管理员
+                                    option(value=2) 配置管理员
+                        .sub-title 状态
+                            div
+                                select(name="isused").form-control
+                                    option(value=0) 停用
+                                    option(value=1 selected) 正常
+
+                |
+                .modal-footer
+                    button.btn.btn-default(type="button", data-dismiss="modal") 关闭
+                    button.btn.btn-primary(type="submit") 确认添加
+    #editSysuserModal.modal.fade(tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true")
+        form#editSysuser.modal-dialog(action="/admin/sysuser?cmd=set", method="POST", data-animate-effect="fadeInRight")
+            .modal-content
+                .modal-header
+                    button.close(type="button", data-dismiss="modal", aria-hidden="true") ×
+                    |
+                    h4#editModalLabel.modal-title 编辑管理员
+                .modal-body
+                    .panel-body
+                        .sub-title 管理员账号
+                        div
+                            input.form-control(type="text", name="name" placeholder="管理员账号" readonly)
+                        .sub-title 显示名称
+                        div
+                            input.form-control(type="text", name="display" placeholder="显示名称")
+                        .sub-title 有效期
+                        div
+                            input.form-control(type="text", name="expiredate" placeholder="有效期" value="2099-12-31" readonly)
+                        .sub-title 角色
+                            div
+                                select(name="nrole").form-control
+                                    option(value=0) 平台管理员
+                                    option(value=1) 项目管理员
+                                    option(value=2) 配置管理员
+                        .sub-title 状态
+                            div
+                                select(name="isused").form-control
+                                    option(value=0) 停用
+                                    option(value=1 selected) 正常
+
+                |
+                .modal-footer
+                    button.btn.btn-default(type="button", data-dismiss="modal") 关闭
+                    button.btn.btn-primary(type="submit") 确认修改
+    //自定义js
+    script(src="/javascripts/jquery.form.js")
+
+    // DATA TABLE SCRIPTS
+    script(src="/dataTables/jquery.dataTables.js")
+    |
+    script(src="/dataTables/dataTables.bootstrap.js")
+    |
+    link(rel="stylesheet" href="/stylesheets/bootstrap-datetimepicker.min.css")
+    script(src="/javascripts/bootstrap-datetimepicker.min.js")
+    script(src="/javascripts/bootstrap-datetimepicker.zh-CN.js")
+    script.
+        function getData(name) {
+            $.get('/admin/sysuser?name='+name,function (data) {
+                $('#editSysuser')[0].reset();
+                $('#editSysuser input[name="name"]').val(data.name);
+                $('#editSysuser input[name="display"]').val(data.display);
+                $('#editSysuser input[name="expiredate"]').val(dateFormat(data.expiredate));
+                $('#editSysuser select[name="nrole"]').val(data.nrole);
+                $('#editSysuser select[name="isused"]').val(data.isused);
+                $('#editSysuserModal').modal();
+            })
+        }
+        function delUser(name) {
+            if(confirm("确认删除"+name+"?")){
+                $.post('/admin/deluser?name=' + name, function (data) {
+                    if(data.result>0){
+                        location.reload();
+                    }
+                })
+            }
+        }
+        function reset(name) {
+            if (confirm("确认重置" + name + "的密码为123456?")) {
+                $.post('/admin/reset?name=' + name, function (data) {
+                    if (data.result > 0) {
+                        alert(data.message);
+                        location.reload();
+                    }
+                })
+            }
+        }
+        $(document).ready(function () {
+            $('#dataTables-example').dataTable();
+
+            $('input[name="expiredate"]').datetimepicker({
+                language: 'zh-CN',//显示中文
+                format: 'yyyy-mm-dd',//显示格式
+                minView: "month",//设置只显示到月份
+                initialDate: new Date(),//初始化当前日期
+                autoclose: true,//选中自动关闭
+            })
+
+            $("#newSysuser").ajaxForm(function (data) {
+                if (data.result > 0) {
+                    $('.alert-success').html(data.message);
+                    location.reload();
+                } else
+                    $('.alert-danger').show().html(data.message).animate({opacity: "hide"}, 3000);
+            });
+            $("#editSysuser").ajaxForm(function (data) {
+                if (data.result > 0) {
+                    $('.alert-success').html(data.message);
+                    location.reload();
+                } else
+                    $('.alert-danger').show().html(data.message).animate({opacity: "hide"}, 3000);
+            });
+
+        });
+

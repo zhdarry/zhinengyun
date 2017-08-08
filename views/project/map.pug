@@ -1,0 +1,265 @@
+extends ../layout
+append head
+    script(src="/javascripts/jsrender.min.js")
+block content
+    .header
+        h1.page-header
+            | 节点管理
+        ol.breadcrumb
+            li
+                a(href="/map") 主页
+            |
+            li.active 节点信息
+    #page-inner
+        .row
+            .col-xs-12
+                .panel.panel-info.mapdata
+                    .panel-heading
+                        |   选择项目
+                    .panel-body
+                        i.fa.fa-list
+                        label 项目：
+                        for item in data
+                            .radio3.radio-check.radio-success.radio-inline
+                                input(id= item.id, type="radio", name="project", value= item.name, level= 0, pid= item.id, lv1, lv2, lv3, lv4, lv5, lv6)
+                                label(for=item.id)= item.name
+                    script(type="text/x-jsrender" id="jsrender")
+                        |{{for #data}}
+                        .panel-body
+                            i.fa.fa-list
+                                label 节点：
+                            | {{for data}}
+                            .radio3.radio-check.radio-success.radio-inline
+                                input(id="{{:no}}", type="radio", name="{{:nparent}}", value="{{:name}}", code="{{:code}}", level="{{:level}}" pid="{{:pid}}", lv1="{{:lv1}}", lv2="{{:lv2}}", lv3="{{:lv3}}", lv4="{{:lv4}}", lv5="{{:lv5}}", lv6="{{:lv6}}")
+                                label(for="{{:no}}") {{:name}}
+                            | {{/for}}
+                        |{{/for}}
+        .row
+            .col-md-6.col-sm-6
+                .panel.panel-info
+                    .panel-heading
+                        |   节点信息
+                    .panel-body
+                        .row
+                            .col-md-7
+                                label 当前选择的节点：
+                                    label.info-map
+                            .col-md-5
+                                button#newmapbutton(type="button" title="新增节点" class="btn btn-primary btn-circle")
+                                    i.fa.fa-plus
+                                button#editmapbutton(type="button" title="修改当前节点" class="btn btn-success btn-circle")
+                                    i.fa.fa-edit
+                                button#delmapbutton(type="button" title="删除此节点" class="btn btn-danger btn-circle")
+                                    i.fa.fa-trash-o
+                        .row
+                            .col-md-7
+                                label 当前选择的节点掩码：
+                                label.info-code
+                    .panel-footer
+                        |   注:删除组织节点时,若存在下级节点时不能直接删除
+    #newmapModal.modal.fade(tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true")
+        form#formNewmap.modal-dialog(data-animate-effect="fadeInRight")
+            .modal-content
+                .modal-header
+                    button.close(type="button", data-dismiss="modal", aria-hidden="true") ×
+                    h4.modal-title 新增节点
+                .modal-body
+                    .panel-body
+                        .sub-title 节点名称
+                        div
+                            input.form-control(type="text", name="value" placeholder="输入新增节点的名称", required)
+                        .sub-title 节点类型
+                        div
+                            select(name="type").form-control
+                                for item in type
+                                    option= item.name
+                        div.floor(style="display:none")
+                            .sub-title 节点名称
+                            div
+                                for item,i in Array(65)
+                                    .radio3.radio-check.radio-success.radio-inline
+                                        input(id="floor" + i, type="radio", name="floor", value= i + 1)
+                                        label(for="floor" + i)= i + 1 + "层"
+                .modal-footer
+                    button.btn.btn-default(type="button", data-dismiss="modal") 关闭
+                    button.btn.btn-primary(type="submit") 确认增加
+    #editmapModal.modal.fade(tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true")
+        form#formEditmap.modal-dialog(data-animate-effect="fadeInRight")
+            .modal-content
+                .modal-header
+                    button.close(type="button", data-dismiss="modal", aria-hidden="true") ×
+                    h4.modal-title 修改节点
+                .modal-body
+                    .panel-body
+                        .sub-title 节点名称
+                        div
+                            input#editValue.form-control(type="text", name="value"  required)
+                        .sub-title 节点类型
+                        div
+                            select(name="type").form-control
+                                for item in type
+                                    option= item.name
+                        div.floor(style="display:none")
+                            .sub-title 节点名称
+                            div
+                                for item,i in Array(65)
+                                    .radio3.radio-check.radio-success.radio-inline
+                                        input(id="floor" + i, type="radio", name="floor", value= i + 1)
+                                        label(for="floor" + i)= i + 1 + "层"
+                .modal-footer
+                    button.btn.btn-default(type="button", data-dismiss="modal") 关闭
+                    button.btn.btn-primary(type="submit") 确认修改
+    #delmapModal.modal.fade(tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true")
+        form#formDelmap.modal-dialog(data-animate-effect="fadeInRight")
+            .modal-content
+                .modal-header
+                    button.close(type="button", data-dismiss="modal", aria-hidden="true") ×
+                    h4.modal-title 删除节点
+                .modal-body
+                    .panel-body
+                        .sub-title 确认删除该节点?
+                .modal-footer
+                    button.btn.btn-default(type="button", data-dismiss="modal") 关闭
+                    button.btn.btn-primary(type="submit") 确认删除
+
+    script(src="javascripts/jquery.form.js")
+    script(type="text/javascript").
+        $(document).on('change','select[name="type"]',function (e) {
+            if($(this).val()==='楼层') {
+                $('.floor').show();
+            }else
+                $('.floor').hide();
+        })
+        $(document).on('click','input[type="radio"][name!="floor"]',function (e) {
+            var data = {
+                level:$(this).attr('level'),
+                pid:$(this).attr('pid'),
+                lv1:$(this).attr('lv1'),
+                lv2:$(this).attr('lv2'),
+                lv3:$(this).attr('lv3'),
+                lv4:$(this).attr('lv4'),
+                lv5:$(this).attr('lv5'),
+                lv6:$(this).attr('lv6'),
+            }
+            $(".mapdata .panel-body:gt(" + data.level + ")").remove();
+            $('.info-map').html($(this).val()).attr('level',data.level).attr('pid',data.pid).attr('lv1',data.lv1).attr('lv2',data.lv2).attr('lv3',data.lv3).attr('lv4',data.lv4).attr('lv5',data.lv5).attr('lv6',data.lv6);
+            $('.info-code').html($(this).attr('code'));
+            $.get('/getmap',data, function (data) {
+                if (data.result > 0) {
+                    var html = $('#jsrender').render(data);
+                    $('.mapdata').append(html);
+                }
+            })
+        });
+        $('#newmapbutton').click(function () {
+            var _mapdata = $('.info-map');
+            var option = {
+                data:{
+                    pid:_mapdata.attr('pid'),
+                    nl:"lv"+(parseInt(_mapdata.attr('level'))+1),
+                    lv1:_mapdata.attr('lv1'),
+                    lv2:_mapdata.attr('lv2'),
+                    lv3:_mapdata.attr('lv3'),
+                    lv4:_mapdata.attr('lv4'),
+                    lv5:_mapdata.attr('lv5'),
+                    lv6:_mapdata.attr('lv6'),
+                },
+                url:"/newmap",
+                type:"POST",
+                beforeSubmit:function () {
+                    if(!$('.info-map').attr('pid')) {
+                        toastMessage("未选择项目!",false);
+                        return false;
+                    }
+                    if($('.info-map').attr('lv6')){
+                        toastMessage("最多添加六级节点!",false);
+                        return false;
+                    }
+                },
+                success:function (data) {
+                    if(data.result>0){
+                        toastMessage(data.message,true);
+                        $('#newmapModal').modal('hide');
+                    }else{
+                        toastMessage(data.message,false)
+                    }
+                }
+            }
+            $("#formNewmap").ajaxForm(option);
+            $('#newmapModal').modal();
+        });
+        $('#editmapbutton').click(function () {
+            var _mapdata = $('.info-map');
+            var option = {
+                data: {
+                    pid: _mapdata.attr('pid'),
+                    lv1: _mapdata.attr('lv1'),
+                    lv2: _mapdata.attr('lv2'),
+                    lv3: _mapdata.attr('lv3'),
+                    lv4: _mapdata.attr('lv4'),
+                    lv5: _mapdata.attr('lv5'),
+                    lv6: _mapdata.attr('lv6'),
+                },
+                url: "/editmap",
+                type: "POST",
+                beforeSubmit: function () {
+                    if (!$('.info-map').attr('pid')) {
+                        toastMessage("未选择项目!", false);
+                        return false;
+                    }
+                    if (!$('.info-map').attr('lv1')) {
+                        toastMessage("未选择节点!", false);
+                        return false;
+                    }
+                },
+                success: function (data) {
+                    if (data.result > 0) {
+                        toastMessage(data.message, true);
+                        $('#editmapModal').modal('hide');
+                    } else {
+                        toastMessage(data.message, false)
+                    }
+                }
+            }
+            $("#formEditmap").ajaxForm(option);
+            $('#editValue').val(_mapdata.text()); //编辑前的值
+            $('#editmapModal').modal();
+        });
+        $('#delmapbutton').click(function () {
+            var _mapdata = $('.info-map');
+            var option = {
+                data: {
+                    pid: _mapdata.attr('pid'),
+                    lv1: _mapdata.attr('lv1'),
+                    lv2: _mapdata.attr('lv2'),
+                    lv3: _mapdata.attr('lv3'),
+                    lv4: _mapdata.attr('lv4'),
+                    lv5: _mapdata.attr('lv5'),
+                    lv6: _mapdata.attr('lv6'),
+                },
+                url: "/delmap",
+                type: "POST",
+                beforeSubmit: function () {
+                    if (!$('.info-map').attr('pid')) {
+                        toastMessage("未选择项目!", false);
+                        return false;
+                    }
+                    if (!$('.info-map').attr('lv1')) {
+                        toastMessage("未选择节点!", false);
+                        return false;
+                    }
+                },
+                success: function (data) {
+                    if (data.result > 0) {
+                        toastMessage(data.message, true);
+                        $('#delmapModal').modal('hide');
+                    } else {
+                        toastMessage(data.message, false)
+                    }
+                }
+            }
+            $("#formDelmap").ajaxForm(option);
+            $('#delmapModal').modal();
+        });
+
+
