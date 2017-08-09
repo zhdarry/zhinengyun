@@ -81,7 +81,7 @@ router.get('/getVerifyCode',function (req, res) {
 
 //节点管理页面
 router.get('/map',function (req, res, next) {
-    Promise.all([request.get('/select',{query:"project"}),request.get('/dict',{query:"map.type"})]).then(([data,type])=>{
+    Promise.all([request.get('select',{query:"project"}),request.get('dict',{query:"map.type"})]).then(([data,type])=>{
         res.render('project/map', {
             title: 'Map',
             data:data.data,
@@ -94,7 +94,7 @@ router.get('/map',function (req, res, next) {
 //获取节点信息
 router.get('/getmap',function (req, res, next) {
     if(req.xhr){
-        request.post_ext('/select',{query:"map"},{
+        request.post_ext('select',{query:"map"},{
             pid:req.query.pid,
             lv1:req.query.lv1,
             lv2:req.query.lv2,
@@ -174,16 +174,127 @@ router.post('/delmap',function (req, res, next) {
 
 //获取人员信息页面
 router.get('/user',function (req, res, next) {
-    request.get('select',{query:"user"}).then(data=>{
-        console.log(data);
+    request.get('select',{query:"project"}).then(data=>{
         res.render('project/user',{
             title:"User",
-            data:data
+            data:data.data
         })
     }).catch(error=>{
         next(error);
     })
 });
+//获取指定人员信息
+router.get('/getuser',function (req, res, next) {
+    if(req.xhr){
+        const data = req.query;
+        request.get('select',{query:"user",pid:data.pid,type:data.type,mobile:data.mobile,username:data.username}).then(data=>{
+            res.json(data);
+        }).catch(error=>{
+            res.send(error);
+        })
+    }else
+        res.end();
+})
+//获取节点人员信息
+router.get('/getuserbymap',function (req, res, next) {
+    if(req.xhr){
+        request.get('select',{query:"map.user",pid:req.query.pid,mapno:req.query.mapno,mobile:req.query.mobile,username:req.query.username}).then(data=>{
+            res.json(data);
+        }).catch(error=>{
+            res.send(error);
+        })
+    }else
+        res.end();
+});
+//新增项目人员
+router.post('/newuser',function (req, res, next) {
+    if(req.xhr){
+        const data = req.body;
+        request.post('user',{cmd:"add",pid:req.query.pid,session:req.session.user.token},{
+            mapno:data.mapno,
+            type:data.type,
+            name:data.name,
+            mobile:data.mobile
+        }).then(data=>{
+            res.json(data);
+        }).catch(error=>{
+            res.send(error);
+        })
+    }
+});
+//编辑项目人员
+router.post('/edituser',function (req, res, next) {
+    if(req.xhr){
+        const data = req.body;
+        request.post('user',{cmd:"set",pid:req.query.pid,session:req.session.user.token},{
+            empid:data.empid,
+            type:data.type,
+            name:data.name,
+            mobile:data.mobile,
+            idnumber:data.idnumber,
+            expiredate:data.expiredate,
+            classname:data.classname,
+            ismobile:data.ismobile,
+            isused:data.isused
+        }).then(data=>{
+            res.json(data);
+        }).catch(error=>{
+            res.send(error);
+        })
+    }
+});
+//删除项目人员
+router.post('/deluser',function (req, res, next) {
+    if(req.xhr){
+        const data = req.body;
+        request.post('user',{cmd:"del",pid:req.query.pid,session:req.session.user.token},{
+            empid:data.empid,
+            mapno:data.mapno,
+            type:data.type,
+        }).then(data=>{
+            res.json(data);
+        }).catch(error=>{
+            res.send(error);
+        })
+    }
+});
+//人员楼层绑定
+router.post('/bindfloor',function (req, res, next) {
+    if(req.xhr){
+        const data = req.body;
+        request.post('user',{cmd:"floor",pid:req.query.pid,session:req.session.user.token},{
+            empid:data.empid,
+            mapno:data.mapno,
+            floor:data.floor
+        }).then(data=>{
+            res.json(data);
+        }).catch(error=>{
+            res.send(error);
+        })
+    }
+});
+//获取人员楼层绑定信息
+router.get('/getfloor',function (req, res, next) {
+    if(req.xhr){
+        request.get('select',{query:"user.floor",pid:req.query.pid,mapno:req.query.mapno,empid:req.query.empid}).then(data=>{
+            res.json(data);
+        }).catch(error=>{
+            res.send(error);
+        })
+    }
+});
+//获取人员安全等级
+router.get('/getclass',function (req, res, next) {
+    if(req.xhr){
+        request.get('dict',{query:"safe.class",pid:req.query.pid}).then(data=>{
+            res.json(data);
+        }).catch(error=>{
+            res.send(error);
+        })
+    }
+})
+
+
 //获取设备信息
 router.get('/device',function (req, res, next) {
     res.render('project/device',{

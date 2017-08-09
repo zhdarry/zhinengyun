@@ -1,3 +1,193 @@
-//
-   Created by zhdarry on 2017/8/8.
+extends ../layout
+append head
+    script(src="/javascripts/jsrender.min.js")
+block content
+    .header
+        h1.page-header
+            | 人员管理
+        ol.breadcrumb
+            li
+                a(href="/user") 主页
+            |
+            li.active 节点人员信息
+    #page-inner
+        .row
+            .col-xs-12
+                .panel.panel-info.mapdata
+                    .panel-heading
+                        |   选择项目
+                    .panel-body
+                        i.fa.fa-list
+                        label 项目：
+                        for item in data
+                            .radio3.radio-check.radio-success.radio-inline
+                                input(id= item.id, type="radio", name="project", value= item.name, level= 0, pid= item.id, lv1, lv2, lv3, lv4, lv5, lv6)
+                                label(for=item.id)= item.name
+                    script(type="text/x-jsrender" id="jsrender")
+                        |{{for #data}}
+                        .panel-body
+                            i.fa.fa-list
+                                label 节点：
+                            | {{for data}}
+                            .radio3.radio-check.radio-success.radio-inline
+                                input(id="{{:no}}", type="radio", name="{{:nparent}}", value="{{:name}}", code="{{:code}}", level="{{:level}}" pid="{{:pid}}", lv1="{{:lv1}}", lv2="{{:lv2}}", lv3="{{:lv3}}", lv4="{{:lv4}}", lv5="{{:lv5}}", lv6="{{:lv6}}")
+                                label(for="{{:no}}") {{:name}}
+                            | {{/for}}
+                        |{{/for}}
+        .row
+            .col-md-6.col-sm-6
+                .panel.panel-info
+                    .panel-heading
+                        |   节点信息
+                    .panel-body
+                        .row
+                            .col-md-7.h50
+                                label 当前选择的节点：
+                                    label.info-map 暂无
+                            .col-md-5.text-center
+                                button#newuserbutton(type="button" title="新增人员" class="btn btn-primary btn-circle")
+                                    i.fa.fa-plus
+        .row
+            .col-xs-12
+                .panel.panel-info
+                    .panel-heading
+                        |   人员信息
+                    .panel-body.userbymap
 
+    #newuserModal.modal.fade(tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true")
+        form#formNewuser.modal-dialog(data-animate-effect="fadeInRight")
+            .modal-content
+                .modal-header
+                    button.close(type="button", data-dismiss="modal", aria-hidden="true") ×
+                    |
+                    h4.modal-title 新增人员
+                .modal-body
+                    .panel-body
+                        .sub-title 人员姓名
+                        div
+                            input.form-control(type="text", name="name" placeholder="填写人员姓名" required)
+                            input(type="hidden", name="type", value="普通人员")
+                        .sub-title 手机号码
+                        div
+                            input.form-control(type="text", name="mobile" placeholder="填写手机号码")
+                |
+                .modal-footer
+                    button.btn.btn-default(type="button", data-dismiss="modal") 关闭
+                    button.btn.btn-primary(type="submit") 提交
+    #edituserModal.modal.fade(tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true")
+        form#formEdituser.modal-dialog(data-animate-effect="fadeInRight")
+            .modal-content
+                .modal-header
+                    button.close(type="button", data-dismiss="modal", aria-hidden="true") ×
+                    |
+                    h4.modal-title 修改人员
+                .modal-body
+                    .panel-body
+                        .sub-title 人员姓名
+                        div
+                            input.form-control(type="text", name="name" placeholder="填写人员姓名" required)
+                            input(type="hidden" name="type" value="普通人员")
+                        .sub-title 手机号码
+                        div
+                            input.form-control(type="text", name="mobile" placeholder="填写手机号码")
+                        .sub-title 身份证号
+                            div
+                                input.form-control(type="text", name="mobile" placeholder="填写身份证号码")
+                        .sub-title 有效期
+                            div
+                                input.form-control(type="text", name="mobile" placeholder="选择有效期")
+                        .sub-title 安全等级
+                            div
+                                input.form-control(type="text", name="mobile" placeholder="选择安全等级")
+                        .sub-title 手机用户
+                            div
+                                select.form-control
+                                    option(value=0) 非手机用户
+                                    option(value=1) 手机用户
+                        .sub-title 人员状态
+                            div
+                                select.form-control
+                                    option(value=0) 停用
+                                    option(value=1) 正常
+                |
+                .modal-footer
+                    button.btn.btn-default(type="button") 删除
+                    button.btn.btn-primary(type="submit") 修改
+    script(type="text/x-jsrender" id="jsrender2")
+        | {{for #data}}
+        | {{for data}}
+        .user-img(username="{{:empname}}" pid="{{:pid}}" mobile="{{:mobile}}" type="{{:type}}")
+            .text-center
+                i.fa.fa-user.fa-5x.red
+            .text-center
+                small {{:empname}}
+        | {{/for}}
+        | {{/for}}
+    script(src="javascripts/jquery.form.js")
+    script(type="text/javascript").
+        $(document).on('change', 'input[type="radio"][name!="floor"]', function (e) {
+            var data = {
+                level: $(this).attr('level'),
+                mapno: $(this).attr('id'),
+                pid: $(this).attr('pid'),
+                lv1: $(this).attr('lv1'),
+                lv2: $(this).attr('lv2'),
+                lv3: $(this).attr('lv3'),
+                lv4: $(this).attr('lv4'),
+                lv5: $(this).attr('lv5'),
+                lv6: $(this).attr('lv6'),
+            }
+            $(".mapdata .panel-body:gt(" + data.level + ")").remove();
+            $('.info-map').html($(this).val()).attr('mapno', data.mapno).attr('pid', data.pid);
+            $.get('/getmap', data, function (data) {
+                if (data.result > 0) {
+                    var mytmp = $.templates("#jsrender");
+                    var html = mytmp.render(data);
+                    $('.mapdata').append(html);
+                }
+            })
+
+            $.get('/getuserbymap',data,function (data) {
+                $('.userbymap').empty();
+                if(data.result>0){
+                    var mytmp2 = $.templates("#jsrender2");
+                    var html = mytmp2.render(data);
+                    $('.userbymap').html(html);
+                }else{
+                    $('.userbymap').html("该节点暂无绑定人员");
+                }
+            })
+        });
+        $('#newuserbutton').click(function () {
+            var _mapdata = $('.info-map');
+            var option = {
+                data: {
+                    mapno: _mapdata.attr('mapno'),
+                },
+                url: "/newuser?pid="+_mapdata.attr("pid"),
+                type: "POST",
+                beforeSubmit: function () {
+                    if (!$('.info-map').attr('pid')) {
+                        toastMessage("未选择项目!", false);
+                        return false;
+                    }
+                },
+                success: function (data) {
+                    if (data.result > 0) {
+                        toastMessage(data.message, true);
+                        $('#newuserModal').modal('hide');
+                    } else {
+                        toastMessage(data.message, false)
+                    }
+                }
+            }
+            $("#formNewuser").ajaxForm(option);
+            $('#newuserModal').modal();
+        });
+        $(document).on('click', '.user-img', function (e) {
+            $.get('/getuser',{pid:$(this).attr('pid'),username:$(this).attr('username'),mobile:$(this).attr('mobile'),type:$(this).attr('type')},function (data) {
+                var data = data.data[0];
+
+            })
+            $('#edituserModal').modal();
+        })

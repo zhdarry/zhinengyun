@@ -686,5 +686,12 @@ font-size: 19px;
     max-height: 20px;
     margin-right: 10px;
 }
+.h50{
+    height: 50px;
+    line-height: 50px;
+}
+.user-img{
+    width:80px;display:inline-block
+}
 
 

@@ -1,3 +1,58 @@
-//
-   Created by zhdarry on 2017/8/8.
-
+extends ../layout
+append head
+    script(src="/javascripts/jsrender.min.js")
+block content
+    .header
+        h1.page-header
+            | 设备管理
+        ol.breadcrumb
+            li
+                a(href="/device") 主页
+            |
+            li.active 节点绑定设备
+    #page-inner
+        .row
+            .col-xs-12
+                .panel.panel-info.mapdata
+                    .panel-heading
+                        |   选择项目
+                    .panel-body
+                        i.fa.fa-list
+                        label 项目：
+                        for item in data
+                            .radio3.radio-check.radio-success.radio-inline
+                                input(id= item.id, type="radio", name="project", value= item.name, level= 0, pid= item.id, lv1, lv2, lv3, lv4, lv5, lv6)
+                                label(for=item.id)= item.name
+                    script(type="text/x-jsrender" id="jsrender")
+                        |{{for #data}}
+                        .panel-body
+                            i.fa.fa-list
+                                label 节点：
+                            | {{for data}}
+                            .radio3.radio-check.radio-success.radio-inline
+                                input(id="{{:no}}", type="radio", name="{{:nparent}}", value="{{:name}}", code="{{:code}}", level="{{:level}}" pid="{{:pid}}", lv1="{{:lv1}}", lv2="{{:lv2}}", lv3="{{:lv3}}", lv4="{{:lv4}}", lv5="{{:lv5}}", lv6="{{:lv6}}")
+                                label(for="{{:no}}") {{:name}}
+                            | {{/for}}
+                        |{{/for}}
+    script(src="javascripts/jquery.form.js")
+    script(type="text/javascript").
+        $(document).on('click', 'input[type="radio"][name!="floor"]', function (e) {
+            var data = {
+                level: $(this).attr('level'),
+                code: $(this).attr('code'),
+                pid: $(this).attr('pid'),
+                lv1: $(this).attr('lv1'),
+                lv2: $(this).attr('lv2'),
+                lv3: $(this).attr('lv3'),
+                lv4: $(this).attr('lv4'),
+                lv5: $(this).attr('lv5'),
+                lv6: $(this).attr('lv6'),
+            }
+            $(".mapdata .panel-body:gt(" + data.level + ")").remove();
+            $.get('/getmap', data, function (data) {
+                if (data.result > 0) {
+                    var html = $('#jsrender').render(data);
+                    $('.mapdata').append(html);
+                }
+            })
+        });
