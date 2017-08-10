@@ -1,0 +1,39 @@
+extends ../layout
+append head
+    script(src="/javascripts/jsrender.min.js")
+block content
+    .header
+        h1.page-header
+            | 安全等级
+        ol.breadcrumb
+            li
+                a(href="/getclass") 主页
+            |
+            li.active 时段管理
+    #page-inner
+        .row
+            .col-md-12
+                // Advanced Tables
+                .panel.panel-default
+                    .panel-body
+                        .table-responsive
+                            table#dataTables-example.table.table-striped.table-bordered.table-hover
+                                thead
+                                    tr
+                                        th 安全等级名字
+                                        th 等级编号
+                                        th 安全等级
+                                        th 编辑
+                                |
+                                tbody
+                                    if data.result > 0
+                                        for item in data.data
+                                            tr.gradeA
+                                                td= item.name
+                                                td= item.no
+                                                td= item.begintime+"-"+item.endtime
+                                                td
+                                                    img.myicon(src="/images/edit.png",title="编辑" onclick='getData(\'' + item.name + '\')')
+                                    else
+                                        tr.gradeC
+                                            td(colspan=5) 暂无数据

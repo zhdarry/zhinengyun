@@ -18,6 +18,8 @@ router.get('/project',function (req, res, next) {
             title:'Project',
             data:data
         })
+    }).catch(error=>{
+        next(error);
     })
 });
 //获取项目设备信息
@@ -27,21 +29,48 @@ router.get('/device/:id',function (req, res, next) {
             title:"Device",
             data:data
         })
+    }).catch(error=>{
+        next(error);
     })
 });
 
 //获取平台操作员列表
 router.get('/sysuser',function (req, res, next) {
-    request.get('select',{query:"sysuser.list",session:req.session.user.token,name:req.query.name}).then(data=>{
-        if(req.xhr){
-            res.json(data.data[0]);
-        }else {
+    if(req.xhr){
+        Promise.all([ request.get('select', {
+            query: "sysuser.list",
+            session: req.session.user.token,
+            name: req.query.name
+        }), request.get('select', {
+            query: "sysuser.proj",
+            session: req.session.user.token,
+            name: req.query.name
+        }),request.get('select', {
+            query: "sysuser.menu",
+            session: req.session.user.token,
+            name: req.query.name
+        })]).then(([data,proj,menu])=>{
+            console.log(data,proj,menu);
+            res.json([data.data[0],proj,menu])
+        })
+
+    }else {
+        Promise.all([request.get('dict', {query: 'role'}),request.get('select', {query: 'project'}), request.get('dict', {query: 'menu'}), request.get('select', {
+            query: "sysuser.list",
+            session: req.session.user.token,
+            name: req.query.name
+        })]).then(([role,project, menu, data]) => {
             res.render('admin/sysuser', {
                 title: "Sysuser",
+                role:role.data,
+                project:project.data,
+                menu:menu.data,
                 data: data
             })
-        }
-    })
+        }).catch(error=>{
+            next(error);
+        })
+    }
 });
 //添加平台操作员
 router.post('/sysuser',function (req, res, next) {
@@ -53,15 +82,38 @@ router.post('/sysuser',function (req, res, next) {
         expiredate:data.expiredate,
         nrole:data.nrole,
         isused:data.isused
-    }).then(data=>{
-        res.json(data);
+    }).then(msg1=>{
+        if(data.nrole=="1") {
+            request.post('sysuser', {cmd: "grant", session: req.session.user.token}, {
+                name: data.name,
+                project: data.project.join(','),
+                menu: data.menu.join(',')
+            }).then(msg2=>{
+                res.json(msg2);
+            })
+        }if(data.nrole=="2"){
+            request.post('sysuser', {cmd: "grant", session: req.session.user.token}, {
+                name: data.name,
+                project: data.project
+            }).then(msg2=>{
+                res.json(msg2);
+            })
+        }else{
+            res.json(msg1);
+        }
+    }).catch(error=>{
+        console.log(error);
+        res.end();
     })
+
 });
 
 //删除操作员
 router.post('/deluser',function (req, res, next) {
     request.getSecure('sysuser',{cmd:"del",name:req.query.name,session:req.session.user.token}).then(data=>{
         res.json(data);
+    }).catch(error=>{
+        res.send(error);
     })
 });
 

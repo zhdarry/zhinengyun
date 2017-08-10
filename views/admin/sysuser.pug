@@ -69,14 +69,38 @@ block content
                         .sub-title 角色
                             div
                                 select(name="nrole").form-control
-                                    option(value=0) 平台管理员
-                                    option(value=1) 项目管理员
-                                    option(value=2) 配置管理员
+                                    for item in role
+                                        option(value= item.no)= item.name
                         .sub-title 状态
                             div
                                 select(name="isused").form-control
                                     option(value=0) 停用
                                     option(value=1 selected) 正常
+                        .project-modal(hidden)
+                            .sub-title 管理项目
+                                div
+                                    for item in project
+                                        .checkbox3.checkbox-success.checkbox-inline.checkbox-check.checkbox-round.checkbox-light
+                                            input(type="checkbox" id= item.id+"p" name="project" value= item.id)
+                                            label(for= item.id+"p")= item.name
+                            .sub-title 管理菜单
+                                div
+                                    for item in menu
+                                        .checkbox3.checkbox-success.checkbox-inline.checkbox-check.checkbox-round.checkbox-light
+                                            input(type="checkbox" id= item.no+"m" name="menu" value= item.no)
+                                            label(for= item.no+"m")= item.name
+                        .card-modal(hidden)
+                            .sub-title 管理项目
+                                div
+                                    for item in project
+                                        .radio3.radio-check.radio-success.radio-inline
+                                            input(type="radio" id= item.id + "pr" name="project" value= item.id)
+                                            label(for= item.id + "pr")= item.name
+                            .sub-title 管理菜单
+                                div
+                                    .checkbox3.checkbox-success.checkbox-inline.checkbox-check.checkbox-round.checkbox-light
+                                        input(type="checkbox" name="card" value="发卡管理" checked readOnly)
+                                        label 发卡管理
 
                 |
                 .modal-footer
@@ -103,14 +127,38 @@ block content
                         .sub-title 角色
                             div
                                 select(name="nrole").form-control
-                                    option(value=0) 平台管理员
-                                    option(value=1) 项目管理员
-                                    option(value=2) 配置管理员
+                                    for item in role
+                                        option(value= item.no)= item.name
                         .sub-title 状态
                             div
                                 select(name="isused").form-control
                                     option(value=0) 停用
                                     option(value=1 selected) 正常
+                        .project-modal(hidden)
+                            .sub-title 管理项目
+                                div
+                                    for item in project
+                                        .checkbox3.checkbox-success.checkbox-inline.checkbox-check.checkbox-round.checkbox-light
+                                            input(type="checkbox" id= item.id + "p" name="project" value= item.id)
+                                            label(for= item.id + "p")= item.name
+                            .sub-title 管理菜单
+                                div
+                                    for item in menu
+                                        .checkbox3.checkbox-success.checkbox-inline.checkbox-check.checkbox-round.checkbox-light
+                                            input(type="checkbox" id= item.no + "m" name="menu" value= item.no)
+                                            label(for= item.no + "m")= item.name
+                        .card-modal(hidden)
+                            .sub-title 管理项目
+                                div
+                                    for item in project
+                                        .radio3.radio-check.radio-success.radio-inline
+                                            input(type="radio" id= item.id + "pr" name="project" value= item.id)
+                                            label(for= item.id + "pr")= item.name
+                            .sub-title 管理菜单
+                                div
+                                    .checkbox3.checkbox-success.checkbox-inline.checkbox-check.checkbox-round.checkbox-light
+                                        input(type="checkbox" name="card" value="发卡管理" checked readOnly)
+                                        label 发卡管理
 
                 |
                 .modal-footer
@@ -128,14 +176,34 @@ block content
     script(src="/javascripts/bootstrap-datetimepicker.min.js")
     script(src="/javascripts/bootstrap-datetimepicker.zh-CN.js")
     script.
+        $('select[name="nrole"]').change(function () {
+            showGrantList($(this).val());
+        })
+        function showGrantList(value) {
+            console.log(value);
+            if (value == "1") {
+                $('.project-modal').show();
+                $('.card-modal').hide();
+            }
+            else if (value == "2") {
+                $('.project-modal').hide();
+                $('.card-modal').show();
+            }
+            else {
+                $('.project-modal').hide();
+                $('.card-modal').hide();
+            }
+        }
         function getData(name) {
-            $.get('/admin/sysuser?name='+name,function (data) {
+            $.get('/admin/sysuser?name='+name,function (result) {
+                var data=result[0];
                 $('#editSysuser')[0].reset();
                 $('#editSysuser input[name="name"]').val(data.name);
                 $('#editSysuser input[name="display"]').val(data.display);
                 $('#editSysuser input[name="expiredate"]').val(dateFormat(data.expiredate));
                 $('#editSysuser select[name="nrole"]').val(data.nrole);
                 $('#editSysuser select[name="isused"]').val(data.isused);
+                showGrantList(data.nrole);
                 $('#editSysuserModal').modal();
             })
         }
@@ -171,17 +239,17 @@ block content
 
             $("#newSysuser").ajaxForm(function (data) {
                 if (data.result > 0) {
-                    $('.alert-success').html(data.message);
+                    toastMessage(data.message,true);
                     location.reload();
                 } else
-                    $('.alert-danger').show().html(data.message).animate({opacity: "hide"}, 3000);
+                    toastMessage(data.message,false)
             });
             $("#editSysuser").ajaxForm(function (data) {
                 if (data.result > 0) {
-                    $('.alert-success').html(data.message);
+                    toastMessage(data.message,true);
                     location.reload();
                 } else
-                    $('.alert-danger').show().html(data.message).animate({opacity: "hide"}, 3000);
+                    toastMessage(data.message,false);
             });
 
         });

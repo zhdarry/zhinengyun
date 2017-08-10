@@ -285,13 +285,32 @@ router.get('/getfloor',function (req, res, next) {
 });
 //获取人员安全等级
 router.get('/getclass',function (req, res, next) {
-    if(req.xhr){
-        request.get('dict',{query:"safe.class",pid:req.query.pid}).then(data=>{
+    request.get('dict',{query:"safe.class",pid:"0001"}).then(data=>{
+        if(req.xhr){
             res.json(data);
-        }).catch(error=>{
-            res.send(error);
-        })
-    }
+        }else{
+            console.log(data);
+            res.render('project/class',{
+                title:"Class",
+                data:data
+            })
+        }
+    }).catch(error=>{
+        res.send(error);
+    })
+});
+//安全等级编辑
+router.post('/editclass',function (req, res, next) {
+    request.post('safeclass',{cmd:"set",session:req.session.user.token},{
+        pid:req.body.pid,
+        classname:req.body.classname,
+        begintime:req.body.begintime,
+        endtime:req.body.endtime
+    }).then(data=>{
+        res.json(data);
+    }).catch(error=>{
+        res.send(error);
+    })
 })
 
 
