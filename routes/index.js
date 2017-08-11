@@ -3,13 +3,29 @@ const express = require('express');
 const middlewares = require('../middlewares/check');
 const des = require('../utils/des');
 const request = require('../proxy/request');
+const config = require('../config');
 
 const router = express.Router();
 
 //主页
 router.get('/',middlewares.checkLogin, function (req, res, next) {
-    res.render('index', { title: 'Index' });
+    Promise.all([request.get('select',{query:"sysuser.proj",name:req.session.user.name,session:req.session.user.token}),request.get('select',{query:"sysuser.menu",name:req.session.user.name,session:req.session.user.token})]).then(([proj,menu])=>{
+        req.session.proj = proj;
+        res.render('index', {
+            title: 'Index',
+            proj:proj,
+            menu:menu,
+            menuUrl:config.menuUrl
+        });
+    })
+
 });
+//警告页面
+router.get('/error',function (req, res, next) {
+    res.render('project/error',{
+        title:"警告"
+    })
+})
 
 //登录
 router.get('/login',function (req, res, next) {
@@ -33,6 +49,9 @@ router.post('/login',function (req, res, next) {
 
                     case "project":
                         res.json({code:1,msg:"登录成功",url:"/"});
+                        break;
+                    default:
+                        res.json({code:-1,msg:"未知身份"});
                         break;
                 }
             }else{
@@ -80,11 +99,10 @@ router.get('/getVerifyCode',function (req, res) {
 
 
 //节点管理页面
-router.get('/map',function (req, res, next) {
-    Promise.all([request.get('select',{query:"project"}),request.get('dict',{query:"map.type"})]).then(([data,type])=>{
+router.get('/map',middlewares.isAuthorized,function (req, res, next) {
+    request.get('dict',{query:"map.type"}).then(type=>{
         res.render('project/map', {
             title: 'Map',
-            data:data.data,
             type:type.data,
         });
     }).catch(error=>{
@@ -173,14 +191,9 @@ router.post('/delmap',function (req, res, next) {
 });
 
 //获取人员信息页面
-router.get('/user',function (req, res, next) {
-    request.get('select',{query:"project"}).then(data=>{
-        res.render('project/user',{
-            title:"User",
-            data:data.data
-        })
-    }).catch(error=>{
-        next(error);
+router.get('/user',middlewares.isAuthorized,function (req, res, next) {
+    res.render('project/user',{
+        title:"User",
     })
 });
 //获取指定人员信息
@@ -283,18 +296,19 @@ router.get('/getfloor',function (req, res, next) {
         })
     }
 });
+//安全等级页面
+router.get('/class',middlewares.isAuthorized, function (req, res, next) {
+    request.get('dict',{query:"safe.class",pid:req.session.proj.data[0].pid}).then(data=>{
+        res.render('project/class',{
+            title:"Class",
+            data:data
+        })
+    })
+})
 //获取人员安全等级
-router.get('/getclass',function (req, res, next) {
-    request.get('dict',{query:"safe.class",pid:"0001"}).then(data=>{
-        if(req.xhr){
-            res.json(data);
-        }else{
-            console.log(data);
-            res.render('project/class',{
-                title:"Class",
-                data:data
-            })
-        }
+router.get('/getclass',middlewares.isAuthorized, function (req, res, next) {
+    request.get('dict',{query:"safe.class",pid:req.query.pid,no:req.query.no}).then(data=>{
+        res.json(data);
     }).catch(error=>{
         res.send(error);
     })
@@ -303,7 +317,7 @@ router.get('/getclass',function (req, res, next) {
 router.post('/editclass',function (req, res, next) {
     request.post('safeclass',{cmd:"set",session:req.session.user.token},{
         pid:req.body.pid,
-        classname:req.body.classname,
+        classname:req.body.name,
         begintime:req.body.begintime,
         endtime:req.body.endtime
     }).then(data=>{
@@ -315,7 +329,7 @@ router.post('/editclass',function (req, res, next) {
 
 
 //获取设备信息
-router.get('/device',function (req, res, next) {
+router.get('/device',middlewares.isAuthorized,function (req, res, next) {
     res.render('project/device',{
         title:"Device",
 
@@ -325,7 +339,6 @@ router.get('/device',function (req, res, next) {
 //获取设备状态
 router.get('/status',function (req, res, next) {
     request.getSecure('select',{query:"device.status",pid:"0001"}).then(data=>{
-        console.log(data);
         res.render('project/status',{
             title:"Status",
             data:data

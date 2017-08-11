@@ -4,7 +4,6 @@ append head
 block content
     .header
         h1.page-header
-            | 人员管理
         ol.breadcrumb
             li
                 a(href="/user") 主页
@@ -19,10 +18,10 @@ block content
                     .panel-body
                         i.fa.fa-list
                         label 项目：
-                        for item in data
+                        for item in proj
                             .radio3.radio-check.radio-success.radio-inline
-                                input(id= item.id, type="radio", name="project", value= item.name, level= 0, pid= item.id, lv1, lv2, lv3, lv4, lv5, lv6)
-                                label(for=item.id)= item.name
+                                input(id= item.pid+"p", type="radio", name="project", value= item.pname, level= 0, pid= item.pid, lv1, lv2, lv3, lv4, lv5, lv6)
+                                label(for=item.pid+"p")= item.pname
                     script(type="text/x-jsrender" id="jsrender")
                         |{{for #data}}
                         .panel-body

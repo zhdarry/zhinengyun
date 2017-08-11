@@ -139,14 +139,14 @@ block content
                                 div
                                     for item in project
                                         .checkbox3.checkbox-success.checkbox-inline.checkbox-check.checkbox-round.checkbox-light
-                                            input(type="checkbox" id= item.id + "p" name="project" value= item.id)
-                                            label(for= item.id + "p")= item.name
+                                            input(type="checkbox" id= item.id + "pe" name="project" value= item.id)
+                                            label(for= item.id + "pe")= item.name
                             .sub-title 管理菜单
                                 div
                                     for item in menu
                                         .checkbox3.checkbox-success.checkbox-inline.checkbox-check.checkbox-round.checkbox-light
-                                            input(type="checkbox" id= item.no + "m" name="menu" value= item.no)
-                                            label(for= item.no + "m")= item.name
+                                            input(type="checkbox" id= item.no + "me" name="menu" value= item.no)
+                                            label(for= item.no + "me")= item.name
                         .card-modal(hidden)
                             .sub-title 管理项目
                                 div
@@ -180,7 +180,6 @@ block content
             showGrantList($(this).val());
         })
         function showGrantList(value) {
-            console.log(value);
             if (value == "1") {
                 $('.project-modal').show();
                 $('.card-modal').hide();
@@ -197,12 +196,38 @@ block content
         function getData(name) {
             $.get('/admin/sysuser?name='+name,function (result) {
                 var data=result[0];
+                var proj = result[1];
+                var menu = result[2];
                 $('#editSysuser')[0].reset();
                 $('#editSysuser input[name="name"]').val(data.name);
                 $('#editSysuser input[name="display"]').val(data.display);
                 $('#editSysuser input[name="expiredate"]').val(dateFormat(data.expiredate));
                 $('#editSysuser select[name="nrole"]').val(data.nrole);
                 $('#editSysuser select[name="isused"]').val(data.isused);
+                if(proj){
+                    var _projid = [];
+                    $.each(proj,function (i, e) {
+                        _projid.push(e.pid+"pe");
+                    })
+                    $('#editSysuser input[type="checkbox"][name="project"]').each(function () {
+                        var checkbox = $(this);
+                        if($.inArray(checkbox.attr('id'),_projid)!=-1){
+                            checkbox.prop('checked',true);
+                        }
+                    })
+                }
+                if(menu){
+                    var _menuid = [];
+                    $.each(menu, function (i, e) {
+                        _menuid.push(e.menuno + "me");
+                    })
+                    $('#editSysuser input[type="checkbox"][name="menu"]').each(function () {
+                        var checkbox = $(this);
+                        if ($.inArray(checkbox.attr('id'), _menuid) != -1) {
+                            checkbox.prop('checked', true);
+                        }
+                    })
+                }
                 showGrantList(data.nrole);
                 $('#editSysuserModal').modal();
             })

@@ -4,7 +4,6 @@ append head
 block content
     .header
         h1.page-header
-            | 节点管理
         ol.breadcrumb
             li
                 a(href="/map") 主页
@@ -19,10 +18,10 @@ block content
                     .panel-body
                         i.fa.fa-list
                         label 项目：
-                        for item in data
+                        for item in proj
                             .radio3.radio-check.radio-success.radio-inline
-                                input(id= item.id, type="radio", name="project", value= item.name, level= 0, pid= item.id, lv1, lv2, lv3, lv4, lv5, lv6)
-                                label(for=item.id)= item.name
+                                input(id= item.pid+"p", type="radio", name="project", value= item.pname, level= 0, pid= item.pid, lv1, lv2, lv3, lv4, lv5, lv6)
+                                label(for=item.pid+"p")= item.pname
                     script(type="text/x-jsrender" id="jsrender")
                         |{{for #data}}
                         .panel-body
@@ -124,13 +123,17 @@ block content
 
     script(src="javascripts/jquery.form.js")
     script(type="text/javascript").
+        var _premap = "";
+        var _curmap = "";
         $(document).on('change','select[name="type"]',function (e) {
             if($(this).val()==='楼层') {
                 $('.floor').show();
             }else
                 $('.floor').hide();
-        })
+        });
         $(document).on('click','input[type="radio"][name!="floor"]',function (e) {
+            _premap = _curmap;
+            _curmap = $(this);
             var data = {
                 level:$(this).attr('level'),
                 pid:$(this).attr('pid'),
@@ -180,6 +183,7 @@ block content
                     if(data.result>0){
                         toastMessage(data.message,true);
                         $('#newmapModal').modal('hide');
+                        _curmap.click();
                     }else{
                         toastMessage(data.message,false)
                     }
@@ -216,6 +220,7 @@ block content
                     if (data.result > 0) {
                         toastMessage(data.message, true);
                         $('#editmapModal').modal('hide');
+                        _premap.click();
                     } else {
                         toastMessage(data.message, false)
                     }
@@ -253,6 +258,7 @@ block content
                     if (data.result > 0) {
                         toastMessage(data.message, true);
                         $('#delmapModal').modal('hide');
+                        _premap.click();
                     } else {
                         toastMessage(data.message, false)
                     }

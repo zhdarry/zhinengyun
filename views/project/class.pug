@@ -1,10 +1,10 @@
 extends ../layout
 append head
+    link(rel="stylesheet" href="/stylesheets/bootstrap-datetimepicker.min.css")
     script(src="/javascripts/jsrender.min.js")
 block content
     .header
         h1.page-header
-            | 安全等级
         ol.breadcrumb
             li
                 a(href="/getclass") 主页
@@ -12,12 +12,25 @@ block content
             li.active 时段管理
     #page-inner
         .row
+            .col-xs-12
+                .panel.panel-info.mapdata
+                    .panel-heading
+                        |   选择项目
+                    .panel-body
+                        i.fa.fa-list
+                        label 项目：
+                        for item in proj
+                            .radio3.radio-check.radio-success.radio-inline
+                                input(id= item.pid, type="radio", name="project", value= item.pname, level= 0, pid= item.pid, lv1, lv2, lv3, lv4, lv5, lv6)
+                                label(for=item.pid)= item.pname
+        .row
             .col-md-12
-                // Advanced Tables
-                .panel.panel-default
+                .panel.panel-info
+                    .panel-heading
+                        |   项目安全等级
                     .panel-body
                         .table-responsive
-                            table#dataTables-example.table.table-striped.table-bordered.table-hover
+                            table.table.table-striped.table-bordered.table-hover
                                 thead
                                     tr
                                         th 安全等级名字
@@ -25,7 +38,7 @@ block content
                                         th 安全等级
                                         th 编辑
                                 |
-                                tbody
+                                tbody#classdata
                                     if data.result > 0
                                         for item in data.data
                                             tr.gradeA
@@ -33,7 +46,81 @@ block content
                                                 td= item.no
                                                 td= item.begintime+"-"+item.endtime
                                                 td
-                                                    img.myicon(src="/images/edit.png",title="编辑" onclick='getData(\'' + item.name + '\')')
+                                                    img.myicon.editdata(src="/images/edit.png", pid= item.pid, no= item.no title="编辑")
                                     else
                                         tr.gradeC
-                                            td(colspan=5) 暂无数据
+                                            td 暂无数据
+                                            td 暂无数据
+                                            td 暂无数据
+                                            td 暂无数据
+    script(type="text/x-jsrender" id="jsrender")
+        | {{for #data}}
+        | {{for data}}
+        tr.gradeA
+            td {{:name}}
+            td {{:no}}
+            td {{:begintime}}-{{:endtime}}
+            td
+                img.myicon(src="/images/edit.png", pid="{{:pid}}", no="{{:no}}"  title="编辑")
+        | {{/for}}
+        | {{/for}}
+    #editclassModal.modal.fade(tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true")
+        form#formEditclass.modal-dialog(action="/editclass" method="POST" data-animate-effect="fadeInRight")
+            .modal-content
+                .modal-header
+                    button.close(type="button", data-dismiss="modal", aria-hidden="true") ×
+                    |
+                    h4.modal-title 编辑安全等级
+                .modal-body
+                    .panel-body
+                        .sub-title 等级名称
+                        div
+                            input.form-control(type="text", name="name" required)
+                            input(type="hidden", name="pid", value="普通人员")
+                        .sub-title 时段
+                        div
+                            input.form-control.datetimepicker(type="text", name="begintime", style="width:48%;display:inline-block"  readonly)
+                            | ---
+                            input.form-control.datetimepicker(type="text", name="endtime", style="width:48%;display:inline-block"  readonly)
+                |
+                .modal-footer
+                    button.btn.btn-default(type="button", data-dismiss="modal") 关闭
+                    button.btn.btn-primary(type="submit") 提交
+    script(src="javascripts/jquery.form.js")
+    script(src="/javascripts/bootstrap-datetimepicker.min.js")
+    script(src="/javascripts/bootstrap-datetimepicker.zh-CN.js")
+    script(type="text/javascript").
+        $(document).on('change','input[name="project"]',function () {
+            $.get('/getclass',{pid:$(this).attr('pid')},function (data) {
+                var html = $('#jsrender').render(data);
+                $('#classdata').html(html);
+            })
+        });
+        $(document).on('click', '.editdata', function () {
+            $.get('/getclass', {pid: $(this).attr('pid'),no:$(this).attr('no')}, function (data) {
+                var data = (data.data)[0];
+                $('#formEditclass input').eq(0).val(data.name);
+                $('#formEditclass input').eq(1).val(data.pid);
+                $('#formEditclass input').eq(2).val(data.begintime);
+                $('#formEditclass input').eq(3).val(data.endtime);
+                $("#formEditclass").ajaxForm(function (data) {
+                    if(data.result>0){
+                        location.reload();
+                    }else{
+                        toastMessage(data.message,false);
+                    }
+                });
+                $('#editclassModal').modal();
+            })
+        });
+        $(document).ready(function () {
+            $('.datetimepicker').datetimepicker({
+                language: 'zh-CN',//显示中文
+                format: 'hh:ii',//显示格式
+                startView:0,
+                maxView: 1,
+                minuteStep: 5,
+                initialDate: new Date(),//初始化当前日期
+                autoclose: true,//选中自动关闭
+            })
+        })

@@ -47,30 +47,24 @@ block content
                             |  平台项目管理
                             span.fa.arrow
                         ul.nav.nav-second-level
-                            li
-                                a.active-menu(href="/map",target="menuFrame")
-                                    i.fa.fa-flag
-                                    |   节点管理
-                            li
-                                a(href="/user",target="menuFrame")
-                                    i.fa.fa-user
-                                    |   人员管理
-                            li
-                                a(href="/node",target="menuFrame")
-                                    i.fa.fa-inbox
-                                    |   设备管理
-                            li
-                                a(href="/getclass",target="menuFrame")
-                                    i.fa.fa-clock-o
-                                    |   安全等级
-                            li
-                                a(href="/node",target="menuFrame")
-                                    i.fa.fa-user-md
-                                    |   特殊人员管理
-                            li
-                                a(href="/status",target="menuFrame")
-                                    i.fa.fa-bell-o
-                                    |   设备状态
+                            if menu.result>0
+                                for item,i in menu.data
+                                    if i == 0
+                                        li
+                                            a.active-menu(href= menuUrl[item.menuname], target="menuFrame")
+                                                i.fa.fa-flag
+                                                |   #{item.menuname}
+                                    else
+                                        li
+                                            a(href= menuUrl[item.menuname], target="menuFrame")
+                                                i.fa.fa-flag
+                                                |   #{item.menuname}
+                            else
+                                li
+                                    a.active-menu(href="/#",target="menuFrame")
+                                        i.fa.fa-flag
+                                        |   暂无授权的菜单
+                //-
                     li.active
                         a.li-disabled
                             i.fa.fa-columns
@@ -82,7 +76,10 @@ block content
                                     i.fa.fa-bar-chart-o
                                     |   事件报表
         #page-wrapper
-            iframe#menuFrame(scrolling="yes" name="menuFrame" style="width:100%;overflow:visible" frameborder="0" src="/map")
+            if menu.result>0
+                iframe#menuFrame(scrolling="yes" name="menuFrame" style="width:100%;overflow:visible" frameborder="0" src= menuUrl[(menu.data)[0].menuname])
+            else
+                iframe#menuFrame(scrolling="yes" name="menuFrame" style="width:100%;overflow:visible" frameborder="0" src="/error")
     #myModal.modal.fade(tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true")
         form#formChangePassword.modal-dialog(action="/changePassword", method="POST", data-animate-effect="fadeInRight")
             .modal-content

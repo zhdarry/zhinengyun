@@ -10,5 +10,13 @@ module.exports = {
             res.locals.user = req.session.user;
             next();
         }
+    },
+    isAuthorized: function (req, res, next) {
+        if(req.session.proj.result>0){
+            res.locals.proj = req.session.proj.data;
+            next();
+        }else{
+            res.redirect('/error');
+        }
     }
 };

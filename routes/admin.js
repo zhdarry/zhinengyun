@@ -50,8 +50,7 @@ router.get('/sysuser',function (req, res, next) {
             session: req.session.user.token,
             name: req.query.name
         })]).then(([data,proj,menu])=>{
-            console.log(data,proj,menu);
-            res.json([data.data[0],proj,menu])
+            res.json([data.data[0],proj.data,menu.data])
         })
 
     }else {
@@ -86,12 +85,12 @@ router.post('/sysuser',function (req, res, next) {
         if(data.nrole=="1") {
             request.post('sysuser', {cmd: "grant", session: req.session.user.token}, {
                 name: data.name,
-                project: data.project.join(','),
-                menu: data.menu.join(',')
+                project: data.project.join !== undefined ? data.project.join(',') : data.project,
+                menu: data.menu.join !== undefined ? data.menu.join(',') : data.menu
             }).then(msg2=>{
                 res.json(msg2);
             })
-        }if(data.nrole=="2"){
+        }else if(data.nrole=="2"){
             request.post('sysuser', {cmd: "grant", session: req.session.user.token}, {
                 name: data.name,
                 project: data.project
